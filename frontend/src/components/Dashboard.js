@@ -19,6 +19,10 @@ export default () => {
             method: 'POST',
             body: formData,
         }).then((result) => {
+            if (!result.ok) {
+                throw new Error('Upload failed');
+            }
+
             return result.json()
         }).then((result) => {
             setFiles(files.concat([{
@@ -42,7 +46,7 @@ export default () => {
 
     const renderFile = (file) => (
         <div key={file.id}>
-            {file.error ? <span>Error uploading file</span> : <span>Uploaded {file.filename}</span>}
+            {file.error ? <span>Error uploading file.</span> : <span>Uploaded {file.filename}</span>}
         </div>
     );
 

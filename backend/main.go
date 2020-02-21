@@ -15,7 +15,7 @@ func main() {
 	storage.InitStorage()
 	db.InitDB()
 	broker.InitBroker()
-	crypto.InitCrpyto()
+	crypto.InitCrypto()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},

@@ -96,7 +96,7 @@ func PushFile(c echo.Context) error {
 		storage.DocumentBucket,
 		key,
 		encryptedBuffer,
-		file.Size,
+		int64(encryptedBuffer.Len()),
 		minio.PutObjectOptions{
 			ContentType: file.Header.Get("Content-Type"),
 		})

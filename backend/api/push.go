@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -40,17 +41,16 @@ func PushFile(c echo.Context) error {
 
 	defer content.Close()
 
-	s3reader, s3writer := io.Pipe()
+	buffer := bytes.Buffer{}
 	hashreader, hashwriter := io.Pipe()
 
-	tee := io.MultiWriter(s3writer, hashwriter)
+	tee := io.MultiWriter(&buffer, hashwriter)
 	key := filepath.Join("documents", id.Hex(), file.Filename)
 
 	hash := make(chan string, 1)
 
 	go func() {
 		io.Copy(tee, content)
-		s3writer.Close()
 		hashwriter.Close()
 	}()
 
@@ -62,10 +62,32 @@ func PushFile(c echo.Context) error {
 		hash <- hex.EncodeToString(h.Sum(nil))
 	}()
 
+	// TODO: Hash should be of the encrypted file.
+	hashhex := <-hash
+
+	// Find duplicates
+	sesh := db.Ctx()
+	defer sesh.Close()
+
+	col := sesh.DB("paperless").C("documents")
+
+	count, err := col.Find(bson.M{
+		"hash": hashhex,
+	}).Count()
+
+	if err != nil {
+		return err
+	}
+
+	// This file already exists
+	if count >= 1 {
+		return c.JSON(http.StatusAccepted, struct{}{})
+	}
+
 	_, err = storage.S3.PutObject(
 		storage.DocumentBucket,
 		key,
-		s3reader,
+		&buffer,
 		file.Size,
 		minio.PutObjectOptions{
 			ContentType: file.Header.Get("Content-Type"),
@@ -75,11 +97,6 @@ func PushFile(c echo.Context) error {
 		return err
 	}
 
-	sesh := db.Ctx()
-	defer sesh.Close()
-
-	col := sesh.DB("paperless").C("documents")
-
 	doc := model.Document{
 		ID:          id,
 		Title:       title,
@@ -87,7 +104,7 @@ func PushFile(c echo.Context) error {
 		ContentType: file.Header.Get("Content-Type"),
 		Timestamp:   time.Now(),
 		S3Path:      key,
-		Hash:        <-hash,
+		Hash:        hashhex,
 	}
 
 	err = col.Insert(doc)
@@ -96,8 +113,6 @@ func PushFile(c echo.Context) error {
 		// TODO: Delete object if fail
 		return err
 	}
-
-	// TODO: Put on broker
 
 	jsonbytes, _ := json.Marshal(doc)
 

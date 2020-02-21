@@ -7,6 +7,8 @@ import (
 	"log"
 	"path/filepath"
 
+	"github.com/guad/paperless2/backend/crypto"
+
 	"github.com/globalsign/mgo/bson"
 	"github.com/guad/paperless2/backend/broker"
 	"github.com/guad/paperless2/backend/db"
@@ -19,6 +21,8 @@ import (
 // TODO: Split this into its own microservice
 
 func setupThumbnailer() {
+	crypto.InitCrypto()
+
 	s3q, err := broker.RabbitMQ.QueueDeclare(
 		"document_thumbnail_attach",
 		true,  // durable
@@ -82,7 +86,8 @@ func documentThumbnailer(queue <-chan amqp.Delivery) {
 		}
 
 		thumbnailBytes, _ := base64.StdEncoding.DecodeString(result.Thumbnail)
-		thumbnailBuf := bytes.NewBuffer(thumbnailBytes)
+		encryptedThumb := crypto.Encrypt(thumbnailBytes)
+		thumbnailBuf := bytes.NewBuffer(encryptedThumb)
 
 		path := filepath.Join("thumbnails", result.Document.ID.Hex(), "thumbnail.png")
 

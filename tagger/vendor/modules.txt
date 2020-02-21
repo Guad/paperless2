@@ -8,6 +8,7 @@ github.com/globalsign/mgo/internal/scram
 github.com/go-ini/ini
 # github.com/guad/paperless2/backend v0.0.0 => ../backend
 github.com/guad/paperless2/backend/broker
+github.com/guad/paperless2/backend/crypto
 github.com/guad/paperless2/backend/db
 github.com/guad/paperless2/backend/model
 github.com/guad/paperless2/backend/storage

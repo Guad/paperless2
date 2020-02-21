@@ -1,7 +1,10 @@
 package api
 
 import (
+	"io/ioutil"
 	"net/http"
+
+	"github.com/guad/paperless2/backend/crypto"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/guad/paperless2/backend/db"
@@ -50,5 +53,13 @@ func GetThumbnail(c echo.Context) error {
 
 	defer file.Close()
 
-	return c.Stream(http.StatusOK, "image/png", file)
+	encryptedBytes, err := ioutil.ReadAll(file)
+
+	if err != nil {
+		return err
+	}
+
+	decrypted := crypto.Decrypt(encryptedBytes)
+
+	return c.Blob(http.StatusOK, "image/png", decrypted)
 }

@@ -40,8 +40,9 @@ func Login(c echo.Context) error {
 
 	// TODO: Secure this
 	c.SetCookie(&http.Cookie{
-		Name:  "session",
-		Value: token,
+		Name:    "session",
+		Value:   token,
+		Expires: time.Now().Add(15 * 24 * time.Hour),
 	})
 
 	return c.JSON(http.StatusOK, struct {

@@ -23,7 +23,7 @@ var (
 )
 
 func InitBroker() {
-	secretPath := "rabbitmq.json"
+	secretPath := "/config/rabbitmq.json"
 
 	if altp, ok := os.LookupEnv("RABBITMQ_SECRETS"); ok {
 		secretPath = altp

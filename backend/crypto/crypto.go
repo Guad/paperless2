@@ -15,7 +15,7 @@ var (
 )
 
 func InitCrypto() {
-	secretPath := "aes.json"
+	secretPath := "/config/aes.json"
 
 	if altp, ok := os.LookupEnv("AES_SECRETS"); ok {
 		secretPath = altp

@@ -110,7 +110,7 @@ def main():
     print('Starting!')
     Path(tmpdir).mkdir(parents=True, exist_ok=True)
 
-    config = readConfig('rabbitmq.json', 'RABBITMQ_SECRETS')
+    config = readConfig('/config/rabbitmq.json', 'RABBITMQ_SECRETS')
 
     creds = pika.PlainCredentials(config['username'], config['password'])
     host, port = config['host'].split(':')

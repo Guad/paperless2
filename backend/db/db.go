@@ -20,7 +20,7 @@ var (
 )
 
 func InitDB() {
-	secretPath := "mongo.json"
+	secretPath := "/config/mongo.json"
 
 	if altp, ok := os.LookupEnv("MONGO_SECRETS"); ok {
 		secretPath = altp

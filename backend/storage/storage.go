@@ -24,7 +24,7 @@ var (
 )
 
 func InitStorage() {
-	secretPath := "s3.json"
+	secretPath := "/config/s3.json"
 
 	if altp, ok := os.LookupEnv("S3_SECRETS"); ok {
 		secretPath = altp

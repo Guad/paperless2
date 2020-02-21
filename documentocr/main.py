@@ -2,14 +2,13 @@ import pika
 import os
 import json
 from pathlib import Path
-import minio
 import threading
+import base64
 
 import queues
 from parsers.raster import RasterisedDocumentParser
 
 tmpdir = '/tmp/paperless2'
-S3Client = None
 
 def readConfig(defpath, env):
     path = defpath
@@ -19,24 +18,24 @@ def readConfig(defpath, env):
     with open(path, 'r') as f:
         return json.load(f)
 
-def download_file(doc):
-    S3Client.fget_object('documents', doc['s3_path'], tmpdir + '/' + doc['filename'])
+def write_b64_data(data, path):
+    data_bytes = base64.b64decode(data)
+    with open(path, "wb") as f:
+        f.write(data_bytes)
 
-def upload_thumbnail(doc, path):
-    target_path = os.path.join('thumbnails', doc['id'], 'thumbnail.png')
-
-    S3Client.fput_object('documents', target_path, path, content_type='image/png')
-
-    return target_path
+def fget_b64_data(path):
+    with open(path, "rb") as f:
+        data_bytes = f.read()
+        return base64.b64encode(data_bytes).decode('utf8')
 
 def process_file(ch, method, body):
     try:
-        doc = json.loads(body)
+        packet = json.loads(body)
+        doc = packet['document']
 
         file = tmpdir + '/' + doc['filename']
 
-        print("Downloading file")
-        download_file(doc)    
+        write_b64_data(packet['data'], file)
 
         parser = RasterisedDocumentParser(file)
 
@@ -44,9 +43,6 @@ def process_file(ch, method, body):
         content = parser.get_text()
         print("Thumbnailing")
         thumbnail_path = parser.get_optimised_thumbnail()
-
-        print("Uploading")
-        s3path = upload_thumbnail(doc, thumbnail_path)
 
         print("Publishing")
 
@@ -66,7 +62,7 @@ def process_file(ch, method, body):
 
         packet = json.dumps({
             'document': doc,
-            'thumbnail': s3path
+            'thumbnail': fget_b64_data(thumbnail_path),
         })
 
         ch.basic_publish(
@@ -95,24 +91,9 @@ def callback(ch, method, properties, body):
     t.start()
     
 
-
-
-def setups3():
-    global S3Client 
-
-    config = readConfig('s3.json', 'S3_SECRETS')
-
-    S3Client = minio.Minio(config['endpoint'],
-        access_key=config['access_key'],
-        secret_key=config['secret_key'],
-        region=config['region'],
-        secure=True)
-
 def main():
     print('Starting!')
     Path(tmpdir).mkdir(parents=True, exist_ok=True)
-
-    setups3()
 
     config = readConfig('rabbitmq.json', 'RABBITMQ_SECRETS')
 

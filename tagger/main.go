@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/guad/paperless2/backend/broker"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/model"
+	"github.com/guad/paperless2/backend/storage"
 
 	"github.com/streadway/amqp"
 )
@@ -23,6 +25,7 @@ func main() {
 
 	broker.InitBroker()
 	db.InitDB()
+	storage.InitStorage()
 
 	setupThumbnailer()
 
@@ -122,6 +125,14 @@ func documentTagWorker(queue <-chan amqp.Delivery) {
 				"content": result.Content,
 			},
 		})
+
+		if err == mgo.ErrNotFound {
+			// Document deleted, ignore.
+			log.Println("Document", result.Document.ID, "has been deleted. Ignoring")
+			d.Ack(false)
+			sesh.Close()
+			continue
+		}
 
 		if err != nil {
 			d.Nack(false, true)

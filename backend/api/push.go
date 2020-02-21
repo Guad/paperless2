@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -114,7 +115,17 @@ func PushFile(c echo.Context) error {
 		return err
 	}
 
-	jsonbytes, _ := json.Marshal(doc)
+	b64 := base64.StdEncoding.EncodeToString(buffer.Bytes())
+
+	packet := struct {
+		Document model.Document `json:"document,omitempty"`
+		Data     string         `json:"data,omitempty"`
+	}{
+		Document: doc,
+		Data:     b64,
+	}
+
+	jsonbytes, _ := json.Marshal(packet)
 
 	broker.RabbitMQ.Publish(
 		broker.DocumentUploadQueue, // Exchange

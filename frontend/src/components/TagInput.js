@@ -31,22 +31,28 @@ const TagInput = ({name, label}) => {
     }
 
     const newTagChange = (tag) => {
-        onChange(value.filter(t => t !== tag).concat([tag]));
+        let v = value;
+
+        if (!v || !v.length) {
+            v = [];
+        }
+
+        onChange(v.filter(t => t !== tag).concat([tag]));
     }
 
     return (
         <div>
         <Labeled label={label ?? "Tags"}>
             <Paper className={classes.root}>
-                { !value.length ? <span>No tags</span> : null }
                 {
-                    value?.map(t => <Chip
-                        key={t}
-                        label={t}
-                        onDelete={handleDelete(t)}
-                        className={classes.chip}
-                    />)
-                }
+                    value && value.length ?
+                        value.map(t => <Chip
+                            key={t}
+                            label={t}
+                            onDelete={handleDelete(t)}
+                            className={classes.chip}
+                        />) : <span>No tags</span>
+                }                
             </Paper>
         </Labeled>
         <ReferenceInput label="Add Tag" 

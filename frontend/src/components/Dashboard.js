@@ -4,6 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 
 import { useDropzone } from 'react-dropzone';
+import { Title } from 'react-admin';
 
 export default () => {
     const [files, setFiles] = useState([]);
@@ -47,7 +48,8 @@ export default () => {
 
     return (
         <Card>
-            <CardHeader title="Paperless Administration" />
+            <Title title="Upload Document" />
+            <CardHeader title="Upload Document" />
             <CardContent>
                 <div {...getRootProps()} style={{
                     border: '3px dotted grey',

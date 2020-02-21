@@ -100,7 +100,7 @@ def process_file(connection, ch, method, body):
 def callback(ch, method, properties, body, args):
     print("Dequeuing")
 
-    (connection, threads) = args
+    (connection) = args
 
     t = threading.Thread(target=process_file, args=(connection, ch, method, body))
     t.start()
@@ -125,9 +125,12 @@ def main():
     ch.basic_qos(prefetch_count=1)
 
     print('Starting consuming')
+
+    on_message_callback = functools.partial(callback, args=(conn))
+
     ch.basic_consume(
         queue='ocr_queue',
-        on_message_callback=callback,
+        on_message_callback=on_message_callback,
         auto_ack=False,        
         )
 

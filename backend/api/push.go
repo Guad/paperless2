@@ -43,9 +43,10 @@ func PushFile(c echo.Context) error {
 	defer content.Close()
 
 	buffer := bytes.Buffer{}
+	base64Buffer := bytes.Buffer{}
 	hashreader, hashwriter := io.Pipe()
 
-	tee := io.MultiWriter(&buffer, hashwriter)
+	tee := io.MultiWriter(&buffer, &base64Buffer, hashwriter)
 	key := filepath.Join("documents", id.Hex(), file.Filename)
 
 	hash := make(chan string, 1)
@@ -115,7 +116,7 @@ func PushFile(c echo.Context) error {
 		return err
 	}
 
-	b64 := base64.StdEncoding.EncodeToString(buffer.Bytes())
+	b64 := base64.StdEncoding.EncodeToString(base64Buffer.Bytes())
 
 	packet := struct {
 		Document model.Document `json:"document,omitempty"`

@@ -1,5 +1,5 @@
-//const host = 'https://qbuy.kolhos.chichasov.es'
-const host = '';
+const host = 'https://paperless2.kolhos.chichasov.es'
+// const host = '';
 
 export default {
     // called when the user attempts to log in

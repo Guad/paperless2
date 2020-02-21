@@ -10,8 +10,11 @@ import CardMedia from '@material-ui/core/CardMedia';
 
 import Avatar from '@material-ui/core/Avatar';
 import DescriptionIcon from '@material-ui/icons/Description';
+import IconButton from '@material-ui/core/IconButton';
 
 import Box from '@material-ui/core/Box';
+
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 const DocumentTitle = ({record}) => {
     return <span>Document {record ? `"${record.title}"` : ''}</span>
@@ -52,7 +55,7 @@ const singleLine = {
     noWrap: true,
     textOverflow: 'ellipsis',
     style: {
-        width: '220px',
+        width: '170px',
         display: 'block',
     },
 }
@@ -64,7 +67,7 @@ const DocumentGrid = ({ ids, data, basePath }) => (
             <CardHeader                
                 title={data[id].title ? <TextField record={data[id]} source="title" {...singleLine} /> : <TextField record={data[id]} {...singleLine} source="filename" />}
                 subheader={<DateField record={data[id]} source="timestamp" />}
-                // subheader={<TagField record={data[id]} source="tags"/>}
+                action={<IconButton component="a" href={`/api/fetch/${data[id].id}/${data[id].filename}`}  download target="_blank" ><ArrowDownwardIcon/></IconButton>}
                 avatar={<Avatar><DescriptionIcon /></Avatar>}>
                 </CardHeader>
             

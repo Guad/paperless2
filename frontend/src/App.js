@@ -21,7 +21,7 @@ function App() {
         main: '#7986cb',
       },
       secondary: {
-        main: '#4caf50',
+        main: '#3f51b5',
       }
     }
   })

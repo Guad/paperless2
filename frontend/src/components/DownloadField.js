@@ -17,10 +17,25 @@ const DownloadField = ({ record = {}, source }) => {
     const classes = useStyles();
     return (
         <span>
-            <Button className={classes.button} variant="contained" color="primary" component="a" href={`/api/fetch/${record[source]}`} target="_blank" startIcon={<VisibilityIcon className={classes.icon} />}>
+            <Button
+                className={classes.button}
+                variant="contained"
+                color="primary" 
+                component="a" 
+                href={`/api/fetch/${record[source]}/${record.filename}`} 
+                target="_blank" 
+                startIcon={<VisibilityIcon className={classes.icon} />}>
                 View
             </Button>
-            <Button className={classes.button} variant="contained" color="primary" component="a" href={`/api/fetch/${record[source]}`} target="_blank" startIcon={<GetAppIcon className={classes.icon} />} download>
+            <Button 
+                className={classes.button} 
+                variant="contained" 
+                color="primary" 
+                component="a" 
+                href={`/api/fetch/${record[source]}/${record.filename}`} 
+                target="_blank" 
+                startIcon={<GetAppIcon className={classes.icon} />} 
+                download>
                 Download
             </Button>
         </span>

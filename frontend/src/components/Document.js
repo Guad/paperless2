@@ -80,7 +80,10 @@ const DocumentGrid = ({ ids, data, basePath }) => {
 
                     {
                         data[id].thumbnail_path ?
-                            <CardMedia image={`https://paperless2.kolhos.chichasov.es/api/thumb/${data[id].id}`} title="Thumbnail" style={{ height: '400px', position: "relative" }}>
+                            <CardMedia 
+                                image={`https://paperless2.kolhos.chichasov.es/api/thumb/${data[id].id}`} 
+                                title="Thumbnail" 
+                                style={{ height: '400px', position: "relative" }}>
                                 <div style={tagsStyle}>
                                     <TagField record={data[id]} source="tags" />
                                 </div>
@@ -89,8 +92,11 @@ const DocumentGrid = ({ ids, data, basePath }) => {
                     {
                         data[id].thumbnail_path ? null :
                             <CardContent style={{ padding: 0 }}>
-                                <Box display="flex" justifyContent="center" alignItems="center" style={{ height: 400 }}>
-                                    <DescriptionIcon color="disabled" />
+                                <Box display="flex" justifyContent="center" alignItems="center" style={{ height: 400, position: 'relative' }}>
+                                    <DescriptionIcon color="disabled" style={{ fontSize: 70 }}/>
+                                    <div style={tagsStyle}>
+                                        <TagField record={data[id]} source="tags" />
+                                    </div>
                                 </Box>
                             </CardContent>
                     }

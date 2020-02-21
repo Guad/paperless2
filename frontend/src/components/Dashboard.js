@@ -57,7 +57,11 @@ export default () => {
             <CardContent>
                 <div {...getRootProps()} style={{
                     border: '3px dotted grey',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    height: 200,
                 }}>
                     <input {...getInputProps()} />
                     {

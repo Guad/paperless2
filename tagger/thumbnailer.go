@@ -16,6 +16,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// TODO: Split this into its own microservice
+
 func setupThumbnailer() {
 	s3q, err := broker.RabbitMQ.QueueDeclare(
 		"document_thumbnail_attach",

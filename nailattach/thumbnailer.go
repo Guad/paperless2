@@ -70,6 +70,10 @@ func main() {
 	}
 
 	go documentThumbnailer(msgs)
+
+	inf := make(chan struct{})
+
+	<-inf
 }
 
 func documentThumbnailer(queue <-chan amqp.Delivery) {

@@ -90,7 +90,7 @@ const DocumentGrid = ({ ids, data, basePath }) => (
 
             <CardActions style={{ textAlign: 'right' }}>
                 <EditButton resource="document" basePath={basePath} record={data[id]} />
-                <DeleteButton resource="document" record={data[id]}/>
+                <DeleteButton resource="document" basePath={basePath} record={data[id]}/>
             </CardActions>
         </Card>
     )}

@@ -9,15 +9,13 @@ import (
 	"github.com/guad/paperless2/backend/broker"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/model"
-	"github.com/guad/paperless2/backend/storage"
 
 	"github.com/streadway/amqp"
 )
 
 const (
-	DocumentOCRComplete       = "document_ocr_complete"
-	DocumentTaggingComplete   = "document_tagging_complete"
-	DocumentThumbnailComplete = "document_thumbnail_complete"
+	DocumentOCRComplete     = "document_ocr_complete"
+	DocumentTaggingComplete = "document_tagging_complete"
 )
 
 func main() {
@@ -25,9 +23,6 @@ func main() {
 
 	broker.InitBroker()
 	db.InitDB()
-	storage.InitStorage()
-
-	setupThumbnailer()
 
 	err := broker.RabbitMQ.ExchangeDeclare(
 		DocumentTaggingComplete,

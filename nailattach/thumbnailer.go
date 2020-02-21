@@ -18,10 +18,17 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// TODO: Split this into its own microservice
+const (
+	DocumentThumbnailComplete = "document_thumbnail_complete"
+)
 
-func setupThumbnailer() {
+func main() {
+	log.Println("Starting up..")
+
+	storage.InitStorage()
 	crypto.InitCrypto()
+	broker.InitBroker()
+	db.InitDB()
 
 	s3q, err := broker.RabbitMQ.QueueDeclare(
 		"document_thumbnail_attach",
@@ -121,8 +128,9 @@ func documentThumbnailer(queue <-chan amqp.Delivery) {
 			continue
 		}
 
+		log.Println("Attached thumbnail to", result.Document.ID)
+
 		sesh.Close()
 		d.Ack(false)
-
 	}
 }

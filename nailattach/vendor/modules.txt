@@ -1,0 +1,39 @@
+# github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
+github.com/globalsign/mgo
+github.com/globalsign/mgo/bson
+github.com/globalsign/mgo/internal/json
+github.com/globalsign/mgo/internal/sasl
+github.com/globalsign/mgo/internal/scram
+# github.com/go-ini/ini v1.52.0
+github.com/go-ini/ini
+# github.com/guad/paperless2/backend v0.0.0-00010101000000-000000000000 => ../backend
+github.com/guad/paperless2/backend/broker
+github.com/guad/paperless2/backend/crypto
+github.com/guad/paperless2/backend/db
+github.com/guad/paperless2/backend/model
+github.com/guad/paperless2/backend/storage
+# github.com/minio/minio-go v6.0.14+incompatible
+github.com/minio/minio-go
+github.com/minio/minio-go/pkg/credentials
+github.com/minio/minio-go/pkg/encrypt
+github.com/minio/minio-go/pkg/s3signer
+github.com/minio/minio-go/pkg/s3utils
+github.com/minio/minio-go/pkg/set
+# github.com/mitchellh/go-homedir v1.1.0
+github.com/mitchellh/go-homedir
+# github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
+github.com/streadway/amqp
+# golang.org/x/crypto v0.0.0-20200219234226-1ad67e1f0ef4
+golang.org/x/crypto/argon2
+golang.org/x/crypto/blake2b
+# golang.org/x/net v0.0.0-20200219183655-46282727080f
+golang.org/x/net/http/httpguts
+golang.org/x/net/idna
+golang.org/x/net/publicsuffix
+# golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a
+golang.org/x/sys/cpu
+# golang.org/x/text v0.3.0
+golang.org/x/text/secure/bidirule
+golang.org/x/text/transform
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm

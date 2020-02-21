@@ -67,4 +67,8 @@ func createModel() {
 	mongo.DB("paperless").C("documents").EnsureIndex(mgo.Index{
 		Key: []string{"$text:title", "$text:content"},
 	})
+
+	mongo.DB("paperless").C("documents").EnsureIndex(mgo.Index{
+		Key: []string{"hash:1"},
+	})
 }

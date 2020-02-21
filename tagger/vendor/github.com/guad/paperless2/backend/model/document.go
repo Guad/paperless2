@@ -17,4 +17,5 @@ type Document struct {
 	Timestamp     time.Time     `json:"timestamp,omitempty" bson:"timestamp"`
 	Correspondent string        `json:"correspondent,omitempty" bson:"correspondent"`
 	Tags          []string      `json:"tags,omitempty" bson:"tags"`
+	Hash          string        `json:"hash,omitempty" bson:"hash"`
 }

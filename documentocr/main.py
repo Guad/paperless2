@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import threading
 import base64
+import functools
 
 import queues
 from parsers.raster import RasterisedDocumentParser
@@ -28,7 +29,43 @@ def fget_b64_data(path):
         data_bytes = f.read()
         return base64.b64encode(data_bytes).decode('utf8')
 
-def process_file(ch, method, body):
+def post_process(doc, content, thumbnail, ch, delivery_tag):
+    print("Publishing")
+
+    packet = json.dumps({
+        'document': doc,
+        'content': content
+    })
+
+    ch.basic_publish(
+        exchange=queues.DocumentOCRComplete,
+        routing_key='',
+        body=packet,
+        properties=pika.BasicProperties(
+            delivery_mode = 2, # persistant
+        ),
+    )
+
+    packet = json.dumps({
+        'document': doc,
+        'thumbnail': thumbnail,
+    })
+
+    ch.basic_publish(
+        exchange=queues.DocumentThumbnailComplete,
+        routing_key='',
+        body=packet,
+        properties=pika.BasicProperties(
+            delivery_mode = 2, # persistant
+        ),
+    )
+
+    ch.basic_ack(delivery_tag=delivery_tag)
+
+def reject_threadsafe(ch, delivery_tag):
+    ch.basic_reject(delivery_tag=delivery_tag)
+
+def process_file(connection, ch, method, body):
     try:
         packet = json.loads(body)
         doc = packet['document']
@@ -44,50 +81,28 @@ def process_file(ch, method, body):
         print("Thumbnailing")
         thumbnail_path = parser.get_optimised_thumbnail()
 
-        print("Publishing")
-
-        packet = json.dumps({
-            'document': doc,
-            'content': content
-        })
-
-        ch.basic_publish(
-            exchange=queues.DocumentOCRComplete,
-            routing_key='',
-            body=packet,
-            properties=pika.BasicProperties(
-                delivery_mode = 2, # persistant
-            ),
-        )
-
-        packet = json.dumps({
-            'document': doc,
-            'thumbnail': fget_b64_data(thumbnail_path),
-        })
-
-        ch.basic_publish(
-            exchange=queues.DocumentThumbnailComplete,
-            routing_key='',
-            body=packet,
-            properties=pika.BasicProperties(
-                delivery_mode = 2, # persistant
-            ),
-        )
+        thumbnail = fget_b64_data(thumbnail_path)
 
         os.remove(file)
         os.remove(thumbnail_path)
 
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        cb = functools.partial(post_process, doc, content, thumbnail, ch, method.delivery_tag)
+        connection.add_callback_threadsafe(cb)
+
     except Exception as ex:
         print('ERROR CONVERTING:')
         print(ex)
 
-        ch.basic_reject(delivery_tag=method.delivery_tag)
+        cb = functools.partial(reject_threadsafe, ch, method.delivery_tag)
+        connection.add_callback_threadsafe(cb)
+        
 
-def callback(ch, method, properties, body):
+def callback(ch, method, properties, body, args):
     print("Dequeuing")
 
-    t = threading.Thread(target=process_file, args=(ch, method, body))
+    (connection, threads) = args
+
+    t = threading.Thread(target=process_file, args=(connection, ch, method, body))
     t.start()
     
 

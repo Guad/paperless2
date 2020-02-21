@@ -18,9 +18,10 @@ import Box from '@material-ui/core/Box';
 import { linkToRecord } from 'ra-core';
 import { useHistory } from 'react-router-dom';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import TagInput from './TagInput';
 
 const DocumentTitle = ({ record }) => {
-    return <span>Document {record ? `"${record.title}"` : ''}</span>
+    return <span>Document {record ? `"${record.title ?? record.filename}"` : ''}</span>
 }
 
 
@@ -131,7 +132,9 @@ export const DocumentEdit = props => (
             <TextInput source="title" />            
             <TextInput source="filename" />
             <DateInput source="timestamp" disabled />
-            <TextInput source="tags" parse={TagParser} format={TagFormatter} />
+            {/* <TextInput source="tags" parse={TagParser} format={TagFormatter} /> */}
+            <TagInput name="tags" label="Tags" />
+            
             <TextInput source="content" multiline rows={10}/>
             <DownloadField source="id" />
         </SimpleForm>

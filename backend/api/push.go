@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/guad/paperless2/backend/crypto"
+
 	"github.com/guad/paperless2/backend/broker"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/model"
@@ -86,10 +88,14 @@ func PushFile(c echo.Context) error {
 		return c.JSON(http.StatusAccepted, struct{}{})
 	}
 
+	// Encrypt file
+	encrypted := crypto.Encrypt(buffer.Bytes())
+	encryptedBuffer := bytes.NewBuffer(encrypted)
+
 	_, err = storage.S3.PutObject(
 		storage.DocumentBucket,
 		key,
-		&buffer,
+		encryptedBuffer,
 		file.Size,
 		minio.PutObjectOptions{
 			ContentType: file.Header.Get("Content-Type"),

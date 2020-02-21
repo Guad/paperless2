@@ -1,7 +1,10 @@
 package api
 
 import (
+	"io/ioutil"
 	"net/http"
+
+	"github.com/guad/paperless2/backend/crypto"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/guad/paperless2/backend/db"
@@ -47,5 +50,14 @@ func FetchFile(c echo.Context) error {
 
 	defer file.Close()
 
-	return c.Stream(http.StatusOK, document.ContentType, file)
+	// Decrypt
+	encryptedBytes, err := ioutil.ReadAll(file)
+
+	if err != nil {
+		return err
+	}
+
+	decryptedBytes := crypto.Decrypt(encryptedBytes)
+
+	return c.Blob(http.StatusOK, document.ContentType, decryptedBytes)
 }

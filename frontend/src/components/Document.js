@@ -17,8 +17,7 @@ import Box from '@material-ui/core/Box';
 
 import { linkToRecord } from 'ra-core';
 import { useHistory } from 'react-router-dom';
-
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 
 const DocumentTitle = ({ record }) => {
     return <span>Document {record ? `"${record.title}"` : ''}</span>
@@ -33,11 +32,11 @@ const DocumentFilter = (props) => (
 );
 
 const TagParser = (v) => {
-    return v?.split(',') ?? [];
+    return v?.split(' ') ?? [];
 }
 
 const TagFormatter = (v) => {
-    return v?.join(',') ?? '';
+    return v?.join(' ') ?? '';
 }
 
 const cardStyle = {
@@ -75,7 +74,7 @@ const DocumentGrid = ({ ids, data, basePath }) => {
                     <CardHeader
                         title={data[id].title ? <TextField record={data[id]} source="title" {...singleLine} /> : <TextField record={data[id]} {...singleLine} source="filename" />}
                         subheader={<DateField record={data[id]} source="timestamp" />}
-                        action={<IconButton component="a" href={`/api/fetch/${data[id].id}/${data[id].filename}`} download target="_blank" ><ArrowDownwardIcon /></IconButton>}
+                        action={<IconButton component="a" href={`/api/fetch/${data[id].id}/${data[id].filename}`} download target="_blank" ><SaveAltIcon /></IconButton>}
                         avatar={<Avatar><DescriptionIcon /></Avatar>}>
                     </CardHeader>
 
@@ -123,11 +122,11 @@ export const DocumentEdit = props => (
     <Edit {...props} title={<DocumentTitle />}>
         <SimpleForm>
             <TextInput source="id" disabled />
-            <TextInput source="title" />
-            <TextInput source="content" />
+            <TextInput source="title" />            
             <TextInput source="filename" />
             <DateInput source="timestamp" disabled />
             <TextInput source="tags" parse={TagParser} format={TagFormatter} />
+            <TextInput source="content" multiline rows={10}/>
             <DownloadField source="id" />
         </SimpleForm>
     </Edit>

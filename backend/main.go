@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/guad/paperless2/backend/broker"
+	"github.com/guad/paperless2/backend/crypto"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/storage"
 	"github.com/labstack/echo"
@@ -14,6 +15,7 @@ func main() {
 	storage.InitStorage()
 	db.InitDB()
 	broker.InitBroker()
+	crypto.InitCrpyto()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},

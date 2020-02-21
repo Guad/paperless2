@@ -12,6 +12,10 @@ func tag(content string, tags []model.Tag) []string {
 	bytes := []byte(content)
 
 	for _, tag := range tags {
+		if tag.Regex == "" {
+			continue
+		}
+
 		r := regexp.MustCompile("(?i)" + tag.Regex)
 
 		if r.Match(bytes) {

@@ -29,16 +29,16 @@ def fget_b64_data(path):
         data_bytes = f.read()
         return base64.b64encode(data_bytes).decode('utf8')
 
-def post_process(doc, content, ch, delivery_tag):
+def post_process(doc, thumbnail, ch, delivery_tag):
     print("Publishing")
 
     packet = json.dumps({
         'document': doc,
-        'content': content
+        'thumbnail': thumbnail,
     })
 
     ch.basic_publish(
-        exchange=queues.DocumentOCRComplete,
+        exchange=queues.DocumentThumbnailComplete,
         routing_key='',
         body=packet,
         properties=pika.BasicProperties(
@@ -62,12 +62,15 @@ def process_file(connection, ch, method, body):
 
         parser = RasterisedDocumentParser(file)
 
-        print("Parsing")        
-        content = parser.get_text()
+        print("Thumbnailing")
+        thumbnail_path = parser.get_optimised_thumbnail()
+
+        thumbnail = fget_b64_data(thumbnail_path)
 
         os.remove(file)
+        os.remove(thumbnail_path)
 
-        cb = functools.partial(post_process, doc, content, ch, method.delivery_tag)
+        cb = functools.partial(post_process, doc, thumbnail, ch, method.delivery_tag)
         connection.add_callback_threadsafe(cb)
 
     except Exception as ex:

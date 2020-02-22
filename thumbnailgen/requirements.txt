@@ -1,0 +1,6 @@
+Pika==1.0.0
+dateparser==0.7.0
+langdetect==1.0.7
+pyocr==0.5.3
+Pillow==5.4.1
+pdftotext==2.1.1

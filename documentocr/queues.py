@@ -1,7 +1,6 @@
 
 DocumentUploadQueue = "document_created"
 DocumentOCRComplete = "document_ocr_complete"
-DocumentThumbnailComplete = "document_thumbnail_complete"
 
 def declare(chan):
 
@@ -12,4 +11,3 @@ def declare(chan):
     chan.queue_bind(exchange=DocumentUploadQueue, queue='ocr_queue')
 
     chan.exchange_declare(exchange=DocumentOCRComplete, exchange_type='fanout', durable=True)
-    chan.exchange_declare(exchange=DocumentThumbnailComplete, exchange_type='fanout', durable=True)

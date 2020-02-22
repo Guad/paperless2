@@ -49,7 +49,7 @@ func PushFile(c echo.Context) error {
 	hashreader, hashwriter := io.Pipe()
 
 	tee := io.MultiWriter(&buffer, &base64Buffer, hashwriter)
-	key := filepath.Join("documents", id.Hex(), file.Filename)
+	key := filepath.Join("documents", id.Hex())
 
 	hash := make(chan string, 1)
 

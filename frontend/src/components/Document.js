@@ -118,7 +118,7 @@ DocumentGrid.defaultProps = {
 
 
 export const DocumentList = props => (
-    <List {...props} filters={<DocumentFilter />} perPage={9}>
+    <List {...props} filters={<DocumentFilter />}>
         <DocumentGrid />
     </List>
 );

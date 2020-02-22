@@ -20,7 +20,7 @@ const TagField = ({ record, source }) => {
             color="primary"
             label={item}
             key={item}
-            style={{marginRight: 4}}/>)}
+            style={{marginRight: 4, marginTop: 4}}/>)}
       </>
     )    
   }

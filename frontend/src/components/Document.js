@@ -24,7 +24,6 @@ const DocumentTitle = ({ record }) => {
     return <span>Document {record ? `"${record.title ?? record.filename}"` : ''}</span>
 }
 
-
 const DocumentFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />

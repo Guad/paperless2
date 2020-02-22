@@ -1,5 +1,6 @@
 import React from 'react';
 import { List, Datagrid, TextField, ReferenceInput, SelectInput, EditButton, Edit, SimpleForm, TextInput, NumberInput, DateInput, Create, Filter, DateField, NumberField, ReferenceField } from 'react-admin';
+import TagField from './TagField';
 
 const TagTitle = ({record}) => {
     return <span>Tag {record ? `"${record.name}"` : ''}</span>
@@ -17,6 +18,7 @@ export const TagList = props => (
         <Datagrid rowClick="edit">
             <TextField source="name" />
             <TextField source="regex" />
+            <TagField source="implies" />
             <EditButton/>
         </Datagrid>
     </List>
@@ -28,6 +30,7 @@ export const TagEdit = props => (
             <TextInput source="id" disabled />
             <TextInput source="name" />
             <TextInput source="regex" />
+            <TextInput source="implies" format={(v) => v?.join(' ') ?? []} parse={(v) => v?.split(' ') ?? ''} />
         </SimpleForm>
     </Edit>
 );

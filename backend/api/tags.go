@@ -142,6 +142,7 @@ func UpdateTag(c echo.Context) error {
 
 	doc.Name = strings.ToLower(newDoc.Name)
 	doc.Regex = newDoc.Regex
+	doc.Implies = newDoc.Implies
 
 	err = col.UpdateId(id, doc)
 

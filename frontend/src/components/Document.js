@@ -52,6 +52,8 @@ const tagsStyle = {
     position: 'absolute',
     bottom: '6px',
     left: '6px',
+    display: 'flex',
+    flexWrap: 'wrap-reverse',
 }
 
 const singleLine = {

@@ -113,7 +113,7 @@ def main():
     on_message_callback = functools.partial(callback, args=(conn))
 
     ch.basic_consume(
-        queue='ocr_queue',
+        queue='thumbnail_queue',
         on_message_callback=on_message_callback,
         auto_ack=False,        
         )

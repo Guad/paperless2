@@ -4,3 +4,4 @@ docker build -t guad/paperless-tagger ./tagger/. && docker push guad/paperless-t
 docker build -t guad/paperless-nailattach ./nailattach/. && docker push guad/paperless-nailattach
 docker build -t guad/paperless-ocr ./documentocr/. && docker push guad/paperless-ocr
 docker build -t guad/paperless-frontend ./frontend/. && docker push guad/paperless-frontend
+docker build -t guad/paperless-thumbnail ./thumbnailgen/. && docker push guad/paperless-thumbnail

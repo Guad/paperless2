@@ -134,7 +134,7 @@ func PushFile(c echo.Context) error {
 
 	jsonbytes, _ := json.Marshal(packet)
 
-	broker.RabbitMQ.Publish(
+	err = broker.RabbitMQ.Publish(
 		broker.DocumentUploadQueue, // Exchange
 		"",                         // routing key
 		false,                      // mandatory
@@ -145,6 +145,11 @@ func PushFile(c echo.Context) error {
 			DeliveryMode: amqp.Persistent,
 		},
 	)
+
+	if err != nil {
+		// TODO: Delete object if fail
+		return err
+	}
 
 	return c.JSON(http.StatusCreated, doc)
 }

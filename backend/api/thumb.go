@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/guad/paperless2/backend/api/user"
 	"github.com/guad/paperless2/backend/crypto"
 
 	"github.com/globalsign/mgo/bson"
@@ -16,6 +17,7 @@ import (
 
 func GetThumbnail(c echo.Context) error {
 	doc := c.Param("doc")
+	userid := user.GetUserID(c)
 
 	sesh := db.Ctx()
 	defer sesh.Close()
@@ -29,10 +31,14 @@ func GetThumbnail(c echo.Context) error {
 
 	var document model.Document
 
-	err := col.FindId(id).One(&document)
+	err := col.Find(bson.M{"_id": id, "user_id": userid}).One(&document)
 
 	if err != nil {
 		return err
+	}
+
+	if document.UserID.Hex() != userid {
+		return c.String(http.StatusForbidden, "")
 	}
 
 	if document.ThumbnailPath == "" {

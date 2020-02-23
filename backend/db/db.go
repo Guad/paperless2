@@ -63,6 +63,7 @@ func Ctx() *mgo.Session {
 
 func createModel() {
 	mongo.DB("paperless").C("documents").Create(&mgo.CollectionInfo{})
+	mongo.DB("paperless").C("users").Create(&mgo.CollectionInfo{})
 	mongo.DB("paperless").C("tags").Create(&mgo.CollectionInfo{})
 	mongo.DB("paperless").C("documents").EnsureIndex(mgo.Index{
 		Key: []string{"$text:title", "$text:content"},
@@ -70,5 +71,10 @@ func createModel() {
 
 	mongo.DB("paperless").C("documents").EnsureIndex(mgo.Index{
 		Key: []string{"hash:1"},
+	})
+
+	mongo.DB("paperless").C("users").EnsureIndex(mgo.Index{
+		Key:    []string{"email:1"},
+		Unique: true,
 	})
 }

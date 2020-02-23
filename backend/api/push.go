@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/guad/paperless2/backend/api/user"
 	"github.com/guad/paperless2/backend/crypto"
 
 	"github.com/guad/paperless2/backend/broker"
@@ -27,6 +28,7 @@ import (
 )
 
 func PushFile(c echo.Context) error {
+	userid := user.GetUserID(c)
 	file, err := c.FormFile("document")
 	id := bson.NewObjectId()
 
@@ -76,7 +78,8 @@ func PushFile(c echo.Context) error {
 	col := sesh.DB("paperless").C("documents")
 
 	count, err := col.Find(bson.M{
-		"hash": hashhex,
+		"user_id": userid,
+		"hash":    hashhex,
 	}).Count()
 
 	if err != nil {
@@ -107,6 +110,7 @@ func PushFile(c echo.Context) error {
 
 	doc := model.Document{
 		ID:          id,
+		UserID:      bson.ObjectIdHex(userid),
 		Title:       title,
 		Filename:    file.Filename,
 		ContentType: file.Header.Get("Content-Type"),

@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 
+	"github.com/guad/paperless2/backend/api/user"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/model"
 	"github.com/labstack/echo"
@@ -19,6 +20,8 @@ func ListTags(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("tags")
+
+	userid := user.GetUserID(c)
 
 	offset, _ := strconv.Atoi(or(c.QueryParam("offset"), "0"))
 	limit, _ := strconv.Atoi(or(c.QueryParam("limit"), "50"))
@@ -32,9 +35,9 @@ func ListTags(c echo.Context) error {
 	var query *mgo.Query
 
 	if search, ok := filters["name"]; ok {
-		query = col.Find(bson.M{"name": bson.M{"$regex": search, "$options": "i"}})
+		query = col.Find(bson.M{"user_id": userid, "name": bson.M{"$regex": search, "$options": "i"}})
 	} else {
-		query = col.Find(bson.M{})
+		query = col.Find(bson.M{"user_id": userid})
 	}
 
 	count, _ := query.Count()
@@ -69,6 +72,7 @@ func ListTags(c echo.Context) error {
 
 func GetTag(c echo.Context) error {
 	id, err := getIdParam(c.Param("id"))
+	userid := user.GetUserID(c)
 
 	if err != nil {
 		return err
@@ -80,7 +84,7 @@ func GetTag(c echo.Context) error {
 	col := sesh.DB("paperless").C("tags")
 
 	var doc model.Tag
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err
@@ -94,6 +98,7 @@ func CreateTag(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("tags")
+	userid := user.GetUserID(c)
 
 	var newDoc model.Tag
 	err := c.Bind(&newDoc)
@@ -104,6 +109,7 @@ func CreateTag(c echo.Context) error {
 
 	newDoc.ID = bson.NewObjectId()
 	newDoc.Name = strings.ToLower(newDoc.Name)
+	newDoc.UserID = bson.ObjectIdHex(userid)
 
 	err = col.Insert(newDoc)
 
@@ -119,6 +125,7 @@ func UpdateTag(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("tags")
+	userid := user.GetUserID(c)
 
 	var newDoc model.Tag
 	err := c.Bind(&newDoc)
@@ -134,7 +141,7 @@ func UpdateTag(c echo.Context) error {
 	}
 
 	var doc model.Tag
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err
@@ -158,6 +165,7 @@ func DeleteTag(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("tags")
+	userid := user.GetUserID(c)
 
 	id, err := getIdParam(c.Param("id"))
 
@@ -167,7 +175,7 @@ func DeleteTag(c echo.Context) error {
 
 	var doc model.Tag
 
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err

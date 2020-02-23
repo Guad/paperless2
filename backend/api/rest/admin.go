@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"encoding/json"
@@ -10,6 +10,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/streadway/amqp"
 
+	"github.com/guad/paperless2/backend/api/user"
 	"github.com/guad/paperless2/backend/broker"
 	"github.com/guad/paperless2/backend/db"
 	"github.com/guad/paperless2/backend/model"
@@ -25,6 +26,8 @@ func or(val, def string) string {
 }
 
 func ListDocuments(c echo.Context) error {
+	userid := user.GetUserID(c)
+
 	sesh := db.Ctx()
 	defer sesh.Close()
 
@@ -77,6 +80,8 @@ func ListDocuments(c echo.Context) error {
 		}
 	}
 
+	m["user_id"] = userid
+
 	query := col.Find(m)
 
 	count, _ := query.Count()
@@ -111,6 +116,7 @@ func ListDocuments(c echo.Context) error {
 
 func GetDocument(c echo.Context) error {
 	id, err := getIdParam(c.Param("id"))
+	userid := user.GetUserID(c)
 
 	if err != nil {
 		return err
@@ -122,10 +128,14 @@ func GetDocument(c echo.Context) error {
 	col := sesh.DB("paperless").C("documents")
 
 	var doc model.Document
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err
+	}
+
+	if doc.UserID.Hex() != userid {
+		return c.JSON(http.StatusForbidden, struct{}{})
 	}
 
 	return c.JSON(http.StatusOK, doc)
@@ -136,6 +146,7 @@ func UpdateDocument(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("documents")
+	userid := user.GetUserID(c)
 
 	var newDoc model.Document
 	err := c.Bind(&newDoc)
@@ -151,10 +162,14 @@ func UpdateDocument(c echo.Context) error {
 	}
 
 	var doc model.Document
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err
+	}
+
+	if doc.UserID.Hex() != userid {
+		return c.JSON(http.StatusForbidden, struct{}{})
 	}
 
 	doc.Content = newDoc.Content
@@ -175,7 +190,7 @@ func DeleteDocument(c echo.Context) error {
 	defer sesh.Close()
 
 	col := sesh.DB("paperless").C("documents")
-
+	userid := user.GetUserID(c)
 	id, err := getIdParam(c.Param("id"))
 
 	if err != nil {
@@ -184,10 +199,14 @@ func DeleteDocument(c echo.Context) error {
 
 	var doc model.Document
 
-	err = col.FindId(id).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
 
 	if err != nil {
 		return err
+	}
+
+	if doc.UserID.Hex() != userid {
+		return c.JSON(http.StatusForbidden, struct{}{})
 	}
 
 	err = col.RemoveId(id)

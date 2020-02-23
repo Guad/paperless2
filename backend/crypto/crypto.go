@@ -34,6 +34,10 @@ func InitCrypto() {
 	passphrase = f
 }
 
+func Key() []byte {
+	return passphrase
+}
+
 func Encrypt(data []byte) []byte {
 	block, _ := aes.NewCipher(passphrase)
 

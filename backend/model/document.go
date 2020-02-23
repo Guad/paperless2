@@ -8,6 +8,7 @@ import (
 
 type Document struct {
 	ID            bson.ObjectId `json:"id,omitempty" bson:"_id"`
+	UserID        bson.ObjectId `json:"user_id,omitempty" bson:"user_id"`
 	Title         string        `json:"title,omitempty" bson:"title"`
 	Filename      string        `json:"filename,omitempty" bson:"filename"`
 	S3Path        string        `json:"s3_path,omitempty" bson:"s3_path"`

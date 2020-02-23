@@ -35,9 +35,9 @@ func ListTags(c echo.Context) error {
 	var query *mgo.Query
 
 	if search, ok := filters["name"]; ok {
-		query = col.Find(bson.M{"user_id": userid, "name": bson.M{"$regex": search, "$options": "i"}})
+		query = col.Find(bson.M{"user_id": bson.ObjectIdHex(userid), "name": bson.M{"$regex": search, "$options": "i"}})
 	} else {
-		query = col.Find(bson.M{"user_id": userid})
+		query = col.Find(bson.M{"user_id": bson.ObjectIdHex(userid)})
 	}
 
 	count, _ := query.Count()
@@ -84,7 +84,7 @@ func GetTag(c echo.Context) error {
 	col := sesh.DB("paperless").C("tags")
 
 	var doc model.Tag
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func UpdateTag(c echo.Context) error {
 	}
 
 	var doc model.Tag
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func DeleteTag(c echo.Context) error {
 
 	var doc model.Tag
 
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err

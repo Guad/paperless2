@@ -78,7 +78,7 @@ func PushFile(c echo.Context) error {
 	col := sesh.DB("paperless").C("documents")
 
 	count, err := col.Find(bson.M{
-		"user_id": userid,
+		"user_id": bson.ObjectIdHex(userid),
 		"hash":    hashhex,
 	}).Count()
 

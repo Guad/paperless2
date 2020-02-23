@@ -80,7 +80,7 @@ func ListDocuments(c echo.Context) error {
 		}
 	}
 
-	m["user_id"] = userid
+	m["user_id"] = bson.ObjectIdHex(userid)
 
 	query := col.Find(m)
 
@@ -128,7 +128,7 @@ func GetDocument(c echo.Context) error {
 	col := sesh.DB("paperless").C("documents")
 
 	var doc model.Document
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func UpdateDocument(c echo.Context) error {
 	}
 
 	var doc model.Document
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err
@@ -199,7 +199,7 @@ func DeleteDocument(c echo.Context) error {
 
 	var doc model.Document
 
-	err = col.Find(bson.M{"_id": id, "user_id": userid}).One(&doc)
+	err = col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&doc)
 
 	if err != nil {
 		return err

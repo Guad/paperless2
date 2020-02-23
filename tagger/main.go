@@ -102,7 +102,9 @@ func documentTagWorker(queue <-chan amqp.Delivery) {
 
 		var tags []model.Tag
 
-		err := col.Find(bson.M{}).All(&tags)
+		err := col.Find(bson.M{
+			"user_id": result.Document.UserID,
+		}).All(&tags)
 
 		if err != nil {
 			d.Nack(false, true)

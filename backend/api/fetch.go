@@ -33,7 +33,7 @@ func FetchFile(c echo.Context) error {
 
 	var document model.Document
 
-	err := col.Find(bson.M{"_id": id, "user_id": userid}).One(&document)
+	err := col.Find(bson.M{"_id": id, "user_id": bson.ObjectIdHex(userid)}).One(&document)
 
 	if err != nil {
 		return err

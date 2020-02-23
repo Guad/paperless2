@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/streadway/amqp"
@@ -64,6 +65,14 @@ func InitBroker() {
 	RabbitMQ = ch
 
 	declareQueues()
+
+	errq := make(chan *amqp.Error, 1)
+	errq = conn.NotifyClose(errq)
+
+	go func() {
+		err := <-errq
+		log.Fatal("Connection to RabbitMQ severed:", err)
+	}()
 }
 
 func declareQueues() {

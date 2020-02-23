@@ -70,11 +70,11 @@ func createModel() {
 	})
 
 	mongo.DB("paperless").C("documents").EnsureIndex(mgo.Index{
-		Key: []string{"hash:1"},
+		Key: []string{"hash"},
 	})
 
 	mongo.DB("paperless").C("users").EnsureIndex(mgo.Index{
-		Key:    []string{"email:1"},
+		Key:    []string{"email"},
 		Unique: true,
 	})
 }

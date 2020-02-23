@@ -11,6 +11,7 @@ func route(e *echo.Echo) {
 	g := e.Group("/api")
 
 	g.POST("/login", user.Login)
+	g.POST("/register", user.Register)
 
 	g.POST("/push", api.PushFile, user.AuthMiddleware)
 	g.GET("/fetch/:doc/:fname", api.FetchFile, user.AuthMiddleware)

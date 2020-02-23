@@ -5,10 +5,6 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import Card from '@material-ui/core/Card'
 
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
@@ -67,7 +63,7 @@ export default (props) => {
             return result.json()
         }).then((result) => {
             setMessages(state => {
-                const index = state.findIndex(v => v.id == id);
+                const index = state.findIndex(v => v.id === id);
                 console.log(state, id, index);
 
                 return state.slice(0, index).concat([{
@@ -78,7 +74,7 @@ export default (props) => {
 
         }).catch((error) => {
             setMessages(state => {
-                const index = state.findIndex(v => v.id == id);
+                const index = state.findIndex(v => v.id === id);
                 console.log(state, id, index);
                 return state.slice(0, index).concat([{
                     ...state[index],
@@ -91,7 +87,7 @@ export default (props) => {
 
     const onDrop = useCallback(acceptedFiles => {
         acceptedFiles.map(upload);
-    })
+    }, [messages, upload])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
@@ -99,18 +95,18 @@ export default (props) => {
         <Card key={file.id} variant="outlined" style={styles.cards}>
             <CardHeader
                 avatar={
-                    <Avatar className={file.status == 'error' ? classes.error : file.status == 'done' ? classes.green : null}>
+                    <Avatar className={file.status === 'error' ? classes.error : file.status === 'done' ? classes.green : null}>
                         {
-                            file.status == 'loading' ? 
+                            file.status === 'loading' ? 
                                 <BackupIcon/> :
-                                file.status == 'done' ? <DoneIcon/> :
+                                file.status === 'done' ? <DoneIcon/> :
                                 <ErrorOutlineIcon/>
                         }
                     </Avatar>
                 }
                 title={file.filename}
-                subheader={file.status == 'loading' ? <LinearProgress/> : 
-                        file.status == 'done' ? 'File was uploaded successfuly.' : 'Error while uploading file.'}
+                subheader={file.status === 'loading' ? <LinearProgress/> : 
+                        file.status === 'done' ? 'File was uploaded successfuly.' : 'Error while uploading file.'}
                 />
         </Card>
     );

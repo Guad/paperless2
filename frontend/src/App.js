@@ -1,5 +1,5 @@
 import React from 'react';
-import { Admin, Resource, ListGuesser, EditGuesser } from 'react-admin';
+import { Admin, Resource } from 'react-admin';
 
 import authProvider from './api/authProvider';
 
@@ -12,6 +12,7 @@ import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import { DocumentList, DocumentEdit } from './components/Document';
 import { TagList, TagEdit, TagCreate } from './components/Tag';
 import { createMuiTheme } from '@material-ui/core/styles';
+import LoginPage from './components/login/LoginPage';
 
 function App() {
   const theme = createMuiTheme({
@@ -28,7 +29,7 @@ function App() {
 
   return (
     <div>
-      <Admin dataProvider={apiProvider} dashboard={Dashboard} authProvider={authProvider} theme={theme}>
+      <Admin loginPage={LoginPage} dataProvider={apiProvider} dashboard={Dashboard} authProvider={authProvider} theme={theme}>
         <Resource name="document" list={DocumentList} edit={DocumentEdit} icon={DescriptionIcon} />
         <Resource name="tag" list={TagList} edit={TagEdit} create={TagCreate} icon={LocalOfferIcon}/>
       </Admin>

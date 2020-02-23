@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, ImageField, DeleteButton, TextField, ReferenceInput, SelectInput, EditButton, Edit, SimpleForm, TextInput, NumberInput, DateInput, Create, Filter, DateField, NumberField, ReferenceField } from 'react-admin';
+import { List, DeleteButton, TextField, EditButton, Edit, SimpleForm, TextInput, Filter, DateField, DateInput } from 'react-admin';
 import DownloadField from './DownloadField';
 import TagField from './TagField';
 import Card from '@material-ui/core/Card';
@@ -30,14 +30,6 @@ const DocumentFilter = (props) => (
         <TextInput label="Tags" source="tags" />
     </Filter>
 );
-
-const TagParser = (v) => {
-    return v?.split(' ') ?? [];
-}
-
-const TagFormatter = (v) => {
-    return v?.join(' ') ?? '';
-}
 
 const cardStyle = {
     width: 300,

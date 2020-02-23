@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, ReferenceInput, SelectInput, EditButton, Edit, SimpleForm, TextInput, NumberInput, DateInput, Create, Filter, DateField, NumberField, ReferenceField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, Edit, SimpleForm, TextInput, Create, Filter } from 'react-admin';
 import TagField from './TagField';
 
 const TagTitle = ({record}) => {

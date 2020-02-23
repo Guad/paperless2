@@ -5,6 +5,7 @@ export default {
     // called when the user attempts to log in
     login: async ({ username, password }) => {
         const resp = await fetch(host + '/api/login', {
+            credentials: 'same-origin',
             method: 'POST',
             body: JSON.stringify({
                 'username': username,

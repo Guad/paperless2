@@ -10,8 +10,9 @@ const sessionKey = () => localStorage.getItem('session');
 const httpClient = (url, options) => fetch(url, Object.assign({}, {
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + sessionKey(),
+        // 'Authorization': 'Bearer ' + sessionKey(),
     },
+    credentials: 'same-origin',
     method: 'GET',
 }, options));
 

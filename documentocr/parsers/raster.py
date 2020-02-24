@@ -147,12 +147,15 @@ class RasterisedDocumentParser(DocumentParser):
         return sorted(filter(lambda __: os.path.isfile(__), pnms))
 
     def _guess_language(self, text):
+        default = 'en'
+
         try:
             guess = langdetect.detect(text)
             self.log("debug", "Language detected: {}".format(guess))
             return guess
         except Exception as e:
-            self.log("warning", "Language detection error: {}".format(e))
+            self.log("warning", "Language detection error: {}, defaulting to {}".format(e, default))
+            return default
 
     def _get_ocr(self, imgs):
         """

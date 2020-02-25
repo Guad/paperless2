@@ -1,0 +1,119 @@
+version: '3.1'
+
+services:
+    app:
+        image: guad/paperless-backend
+        networks:
+            - web
+            - db_network
+        secrets:
+            - source: MongoSecrets
+              target: /config/mongo.json
+            - source: S3Secrets
+              target: /config/s3.json
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+            - source: AESSecrets
+              target: /config/aes.json
+        deploy:
+            labels:
+                traefik.port: 8080
+                traefik.frontend.rule: "Host:your.host;PathPrefix:/api"
+                traefik.docker.network: "web"
+            
+    cleaner:
+        image: guad/paperless-cleaner
+        networks:
+            - db_network
+        secrets:
+            - source: S3Secrets
+              target: /config/s3.json
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+    tagger:
+        image: guad/paperless-tagger
+        networks:
+            - db_network
+        secrets:
+            - source: MongoSecrets
+              target: /config/mongo.json
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+        
+    nailattach:
+        image: guad/paperless-nailattach
+        networks:
+            - db_network
+        secrets:
+            - source: MongoSecrets
+              target: /config/mongo.json
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+            - source: S3Secrets
+              target: /config/s3.json
+            - source: AESSecrets
+              target: /config/aes.json
+    ocr:
+        image: guad/paperless-ocr
+        networks:
+            - db_network
+        secrets:
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+        deploy:
+            resources:
+                limits:
+                    memory: "2G"
+    thumbnail:
+        image: guad/paperless-thumbnail
+        networks:
+            - db_network
+        secrets:
+            - source: RabbitMQSecrets
+              target: /config/rabbitmq.json
+    frontend:
+        image: guad/paperless-frontend
+        networks:
+            - web
+        deploy:
+            labels:
+                traefik.port: 80
+                traefik.frontend.rule: "Host:your.host"
+                traefik.docker.network: "web"
+    db:
+        image: bitnami/mongodb
+        environment:
+            - ALLOW_EMPTY_PASSWORD=no
+            - MONGODB_ROOT_PASSWORD=<changeme>
+        networks:
+            - db_network
+        volumes:
+            - data:/bitnami
+    broker:
+        image: bitnami/rabbitmq
+        environment:
+            RABBITMQ_PASSWORD: <changeme>
+        networks:
+            - db_network
+        volumes:
+            - broker_data:/bitnami
+      
+volumes:
+    data:
+    broker_data:
+
+networks:
+    db_network:
+    web:
+        external:
+            name: web
+            
+secrets:
+    MongoSecrets:
+        external: true
+    S3Secrets:
+        external: true
+    RabbitMQSecrets:
+        external: true
+    AESSecrets:
+        external: true

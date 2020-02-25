@@ -1,5 +1,3 @@
-s3.json
-mongo.json
-rabbitmq.json
+*.json
 *.exe
 __pycache__/

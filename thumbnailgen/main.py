@@ -10,6 +10,13 @@ import queues
 from parsers.raster import RasterisedDocumentParser
 
 tmpdir = '/tmp/paperless2'
+rejections = {}
+MAX_REJECTIONS = os.getenv("MAX_REJECTIONS")
+
+if MAX_REJECTIONS == None:
+    MAX_REJECTIONS = 5
+else:
+    MAX_REJECTIONS = int(MAX_REJECTIONS)
 
 def readConfig(defpath, env):
     path = defpath
@@ -32,6 +39,8 @@ def fget_b64_data(path):
 def post_process(doc, thumbnail, ch, delivery_tag):
     print("Publishing")
 
+    docid = doc['id']
+
     packet = json.dumps({
         'document': doc,
         'thumbnail': thumbnail,
@@ -46,15 +55,29 @@ def post_process(doc, thumbnail, ch, delivery_tag):
         ),
     )
 
+    if docid in rejections:
+        del rejections[docid]
+
     ch.basic_ack(delivery_tag=delivery_tag)
 
-def reject_threadsafe(ch, delivery_tag):
-    ch.basic_reject(delivery_tag=delivery_tag)
+def reject_threadsafe(docid, ch, delivery_tag):
+    if not docid in rejections:
+        rejections[docid] = 0
+    rejections[docid] += 1
+    delete = rejections[docid] > MAX_REJECTIONS
+
+    if delete:
+        print('Permanently rejecting document ' + docid)
+        del rejections[docid]
+
+    ch.basic_reject(delivery_tag=delivery_tag, requeue=(not delete))
 
 def process_file(connection, ch, method, body):
+    docid = None
     try:
         packet = json.loads(body)
         doc = packet['document']
+        docid = doc['id']
 
         file = tmpdir + '/' + doc['filename']
 
@@ -77,7 +100,7 @@ def process_file(connection, ch, method, body):
         print('ERROR CONVERTING:')
         print(ex)
 
-        cb = functools.partial(reject_threadsafe, ch, method.delivery_tag)
+        cb = functools.partial(reject_threadsafe, docid, ch, method.delivery_tag)
         connection.add_callback_threadsafe(cb)
         
 
